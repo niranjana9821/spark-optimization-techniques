@@ -1,6 +1,6 @@
 # PySpark Performance Optimization
 
-A hands-on notebook demonstrating **8 Spark optimization techniques** with physical execution plan analysis, timing comparisons, and engine-level explanations — built on a synthetic 1M-row e-commerce dataset.
+A hands-on notebook demonstrating **8 Spark optimization techniques** with physical execution plan analysis, timing comparisons, and engine-level explanations built on a synthetic 1M-row e-commerce dataset.
 
 Built to demonstrate practical Spark knowledge beyond API familiarity.
 
@@ -125,7 +125,7 @@ Always call `unpersist()` after use to free executor memory.
 | | Python UDF | Pandas UDF | Built-in Function |
 |---|---|---|---|
 | Execution | Row-by-row | Arrow batch | JVM native |
-| Catalyst Optimization | ❌ | ❌ | ✅ |
+| Catalyst Optimization | No | No | Yes |
 | Use When | Avoid | Custom logic only | Always prefer |
 
 ---
@@ -168,7 +168,6 @@ jupyter notebook notebooks/Spark_Optimization_Techniques.ipynb
 spark-optimization-techniques/
 ├── README.md
 ├── requirements.txt
-├── .gitignore
 ├── notebooks/
 │   ├── Generate_Dataset.ipynb        # Synthetic data generation
 │   └── Spark_Optimization_Techniques.ipynb  # Main optimization notebook
@@ -181,7 +180,7 @@ spark-optimization-techniques/
 │   ├── execution_times.md            # Full timing results and notes
 │   ├── observations.md               # Physical plan analysis per technique
 │   └── optimization_summary.md      # Decision guide and quick reference
-└── LICENSE
+
 ```
 
 ---
