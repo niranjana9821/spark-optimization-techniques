@@ -25,7 +25,6 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Fix:** Broadcast the small Products table (5K rows) to every executor.  
 **Result:** ↓ 44% execution time (3.28s → 1.85s)
 
-![Broadcast Join](images/broadcast_join_plan.png)
 
 **Plan signal:** `SortMergeJoin` with two `Exchange` nodes → `BroadcastHashJoin` with one `BroadcastExchange`
 
@@ -36,7 +35,7 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Fix:** Filter directly on the raw column value.  
 **Result:** `DictionaryFilters` active → row groups skipped at the Parquet reader level before data enters Spark.
 
-![Predicate Pushdown](images/predicate_pushdown.png)
+
 
 **Plan signal:** `PushedFilters: []` and `DictionaryFilters: []` → `PushedFilters: [IsNotNull, EqualTo]` and `DictionaryFilters: [(customer_id=100)]`
 
@@ -47,7 +46,7 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Fix:** Catalyst Optimizer handles this automatically — no code change needed.  
 **Result:** `ReadSchema` contains only `product_id` and `total_amount` instead of all 9 columns.
 
-![Column Pruning](images/column_pruning.png)
+
 
 **Plan signal:** `ReadSchema: struct<product_id:int, total_amount:int>`
 
@@ -58,7 +57,7 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Fix:** Filter directly on the partition column `order_year`.  
 **Result:** ↓ 44% execution time (1.24s → 0.69s)
 
-![Partition Pruning](images/partition_pruning.png)
+
 
 **Plan signal:** `PartitionFilters: []` → `PartitionFilters: [isnotnull(order_year), (order_year=2025)]`
 
@@ -69,7 +68,7 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Fix:** Salting — append a random number to the key, run partial aggregation, strip the salt, run final aggregation.  
 **Result:** Hot keys split from 200,000 rows/partition to ~20,000 rows/partition across 10 partitions.
 
-![Data Skew](images/data_skew.png)
+
 
 > **Note:** Salting shows its timing benefit on multi-node clusters. On single-node Colab, the proof is in the key distribution output, not wall-clock time.
 
@@ -81,7 +80,6 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Problem:** Using `repartition()` when reducing partitions introduces an unnecessary full shuffle.  
 **Fix:** Use `coalesce()` to merge partitions locally without network transfer.
 
-![Repartition vs Coalesce](images/repartition_vs_coalesce.png)
 
 | | Repartition (Round-Robin) | Repartition (By Column) | Coalesce |
 |---|---|---|---|
@@ -92,7 +90,7 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 
 **Repartition by Column:** `repartition(N, col("key"))` co-locates data for downstream joins. Real benefit appears in multi-join pipelines where the same pre-partitioned DataFrame is reused with `cache()`.
 
-![Repartition by Column](images/repartition_by_column.png)
+
 
 ---
 
@@ -101,7 +99,7 @@ Synthetic e-commerce data generated using `Generate_Dataset.ipynb`:
 **Fix:** `cache()` or `persist()` materialises the DataFrame once; all subsequent actions read from memory.  
 **Result:** ↓ ~70% on repeated actions
 
-![Cache vs Persist](images/cache_vs_persist.png)
+
 
 | | cache() | persist(MEMORY_AND_DISK) |
 |---|---|---|
@@ -118,7 +116,7 @@ Always call `unpersist()` after use to free executor memory.
 **Fix:** Replace with built-in `when()/otherwise()` which executes natively in the JVM with Catalyst optimization.  
 **Result:** ↓ 82% execution time (11.18s → 1.96s)
 
-![UDF vs Built-in](images/udf_vs_builtin.png)
+
 
 **Plan signal:** `pythonUDF` node (black box, no optimization) → `CASE WHEN` inside a `Project` node
 
