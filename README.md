@@ -141,16 +141,16 @@ Always call `unpersist()` after use to free executor memory.
 | 7 | Cache vs Persist | ~5.4s | ~1.6s | ↓ 70% |
 | 8 | UDF vs Built-in | 11.18s | 1.96s | ↓ 82% |
 
-> Benchmarks on Google Colab (single-node `local[*]`). See [docs/execution_times.md](docs/execution_times.md) for full notes.
+
 
 ---
 
 ## How to Run
 
 ### Option 1 — Google Colab (recommended)
-1. Upload `notebooks/Spark_Optimization_Techniques.ipynb` to Colab
-2. Run `Generate_Dataset.ipynb` first to create the data
-3. Run the optimization notebook
+1. Upload `notebooks/` to Colab
+2. Run `Generate_Dataset.ipynb` first to create the data, ensure the dataset is created in the desired path.
+3. Run the Spark_Optimization notebook. Note - check the paths where the dataset is created for reading into a dataframe.
 
 ### Option 2 — Local
 ```bash
